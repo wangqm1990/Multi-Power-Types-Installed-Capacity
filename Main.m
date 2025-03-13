@@ -1,36 +1,36 @@
-%% ´¢ÄÜµ÷Æµ
-% Á£×ÓÈºËã·¨°æ
+%% å‚¨èƒ½è°ƒé¢‘
+% ç²’å­ç¾¤ç®—æ³•ç‰ˆ
 
-%%  ±äÁ¿¶¨ÒåÈçÏÂ£º
-% ¾ö²ß±äÁ¿£º% ½Ï¸ß, ½ÏµÍ, ¹ºµç£¬ÊÛµç£¬×î´óÖµ
-% x=[soc_h, soc_l, P_b£¬P_s£¬P_m];
+%%  å˜é‡å®šä¹‰å¦‚ä¸‹ï¼š
+% å†³ç­–å˜é‡ï¼š% è¾ƒé«˜, è¾ƒä½, è´­ç”µï¼Œå”®ç”µï¼Œæœ€å¤§å€¼
+% x=[soc_h, soc_l, P_bï¼ŒP_sï¼ŒP_m];
 
 clc;
 clear;
 close all;
 
-%% Ëã·¨²ÎÊı
+%% ç®—æ³•å‚æ•°
 parameter;
 
-nVar = 5;              % ¾ö²ß±äÁ¿¸öÊı
-VarMin = [ones(1, 2)*soc_min, zeros(1, 3)]; % ±äÁ¿ÏÂÏŞ
-VarMax = [ones(1, 2)*soc_max, ones(1, 3)*P_max]; % ±äÁ¿ÉÏÏŞ
-MaxIt = 30000;      % ×î´óµü´ú´ÎÊı
-nPop = 10;        % ÖÖÈºÊıÁ¿
+nVar = 5;              % å†³ç­–å˜é‡ä¸ªæ•°
+VarMin = [ones(1, 2)*soc_min, zeros(1, 3)]; % å˜é‡ä¸‹é™
+VarMax = [ones(1, 2)*soc_max, ones(1, 3)*P_max]; % å˜é‡ä¸Šé™
+MaxIt = 30000;      % æœ€å¤§è¿­ä»£æ¬¡æ•°
+nPop = 10;        % ç§ç¾¤æ•°é‡
 
-%% ¼ÆËã
+%% è®¡ç®—
 [bestPosition, fitValue] = PSOFUN( @fun_objective, nVar, VarMin, VarMax, MaxIt, nPop );
 x = bestPosition;
 
 [fun, g, Pt, ft, Q_soc] = fun_jieguo(x);
 
-%% ¸÷¸ö¾ö²ß±äÁ¿µÄº¬Òå
-soc_h = x(1);    % ½Ï¸ß
-soc_l = x(2);   % ½ÏµÍ
-P_b = x(3);     % ¹ºµç
-P_s = x(4);    % ÊÛµç
-P_m = fix(x(5) + 1);        % ×î´óÖµ
-E_b = 0.32*P_m;    %´¢ÄÜÈİÁ¿
+%% å„ä¸ªå†³ç­–å˜é‡çš„å«ä¹‰
+soc_h = x(1);    % è¾ƒé«˜
+soc_l = x(2);   % è¾ƒä½
+P_b = x(3);     % è´­ç”µ
+P_s = x(4);    % å”®ç”µ
+P_m = fix(x(5) + 1);        % æœ€å¤§å€¼
+E_b = 0.32*P_m;    %å®¹é‡
 Q_soc;
 J1 = fun;
 Qsoc_high = soc_h;
@@ -40,24 +40,24 @@ P_sell = P_s;
 P_rated = P_m;
 Qsoc_rms = Q_soc;
 E_rated = E_b;
-%% »­Í¼
+%% ç”»å›¾
 subplot(2, 2, 3)
 plot(u1, 'k')
-title('ÓÅ»¯Ç°ÆµÂÊÆ«²î')
-xlabel('Ê±¼ä/s')
-ylabel('ÆµÂÊÆ«²î/Hz')
-legend('ÆµÂÊÆ«²î')
+title('ä¼˜åŒ–å‰é¢‘ç‡åå·®')
+xlabel('æ—¶é—´/s')
+ylabel('é¢‘ç‡åå·®/Hz')
+legend('é¢‘ç‡åå·®')
 
 subplot(2, 2, 4)
 plot(ft, 'k')
-title('ÓÅ»¯ºóÆµÂÊÆ«²î')
-xlabel('Ê±¼ä/s')
-ylabel('ÆµÂÊÆ«²î/Hz')
-legend('ÆµÂÊÆ«²î')
+title('ä¼˜åŒ–åé¢‘ç‡åå·®')
+xlabel('æ—¶é—´/s')
+ylabel('é¢‘ç‡åå·®/Hz')
+legend('é¢‘ç‡åå·®')
 
 subplot(2, 2, 2)
 plot(-Pt, 'k', 'LineWidth', 2)
-title('³öÁ¦')
-xlabel('Ê±¼ä/s')
-ylabel('³öÁ¦/MW')
-legend('´¢ÄÜ³öÁ¦')
+title('å‡ºåŠ›')
+xlabel('æ—¶é—´/s')
+ylabel('å‡ºåŠ›/MW')
+legend('å¯æ§ç”µæºå‡ºåŠ›')
