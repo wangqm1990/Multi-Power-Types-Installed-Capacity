@@ -1,23 +1,23 @@
 function [fun, g, Pt, ft, Q_soc] = fun_jieguo(x)
-%% ×¼±¸¹¤×÷
-parameter; %ÊäÈëËùÓĞµÄÊı¾İ
+%% å‡†å¤‡å·¥ä½œ
+parameter; %è¾“å…¥æ‰€æœ‰çš„æ•°æ®
 m1 = size(u1, 1);
 Pt = zeros(m1, 1);
 ft = zeros(m1, 1);
 fa1 = zeros(m1, 1);
 fa2 = zeros(m1, 1);
-% ¸÷¸ö¾ö²ß±äÁ¿µÄº¬Òå
-soc_h = x(1);      % ½Ï¸ß
-soc_l = x(2);      % ½ÏµÍ
-P_b = x(3);        % ¹ºµç
-P_s = x(4);        % ÊÛµç
-P_m = fix(x(5) + 1);        % ×î´óÖµ
-E_b = 0.32*P_m*3600 ;     %´¢ÄÜÈİÁ¿
-E_bt = zeros(m1 + 1, 1);%ÊµÊ±ºÉµç×´Ì¬
+% å„ä¸ªå†³ç­–å˜é‡çš„å«ä¹‰
+soc_h = x(1);      % è¾ƒé«˜
+soc_l = x(2);      % è¾ƒä½
+P_b = x(3);        % è´­ç”µ
+P_s = x(4);        % å”®ç”µ
+P_m = fix(x(5) + 1);        % æœ€å¤§å€¼
+E_b = 0.32*P_m*3600 ;     %å®¹é‡
+E_bt = zeros(m1 + 1, 1);%å®æ—¶çŠ¶æ€
 E_bt(1) = E_b*soc0;
 
-%% ÊéĞ´Ô¼Êø
-% ******************* ²»µÈÊ½Ô¼Êø ***************************
+%% ä¹¦å†™çº¦æŸ
+% ******************* ä¸ç­‰å¼çº¦æŸ ***************************
 g=[];
 g=[g, P_min - P_m] ; % <=0
 g=[g, P_b - P_m] ; % <=0
@@ -26,23 +26,23 @@ g=[g, soc_l - soc_h] ; % <=0
 %   g=[g, soc - soc_max] ; % <=0
 %   g=[g, soc_min - soc] ; % <=0
 
-%% ¿ØÖÆ²ßÂÔÔ¼Êø
+%% æ§åˆ¶ç­–ç•¥çº¦æŸ
 for t=1:m1
-    %ËÀÇø
+    %æ­»åŒº
     if u1(t)>=dta_fd&&u1(t)<=dta_fu
         ft(t)=u1(t);
-        %ÊÛµç
+        %å”®ç”µ
         if E_bt(t)>E_b*soc_h
             Pt(t)=P_s;
             ft(t)=u1(t)+P_s/Ke;
         end
-        %¹ºµç
+        %è´­ç”µ
         if E_bt(t)<E_b*soc_l
             Pt(t)=-P_b;
             ft(t)=u1(t)-P_b/(Ke);
         end
 
-        %¸ßÓÚËÀÇø
+        %é«˜äºæ­»åŒº
     elseif u1(t)>dta_fu
         ft(t)=u1(t);
         if E_bt(t)<E_b*soc_max&&E_bt(t)>=E_b*soc_min
@@ -53,7 +53,7 @@ for t=1:m1
             fa1(t)=Ke*u1(t);
         end
 
-        %µÍÓÚËÀÇø
+        %ä½äºæ­»åŒº
     elseif u1(t)<dta_fd
         ft(t)=u1(t);
         if E_bt(t)<=E_b*soc_max&&E_bt(t)>E_b*soc_min
@@ -74,53 +74,53 @@ for t=1:m1
     %       g=[g, abs(ft(t)) - abs(u1(t))] ; % <=0
 end
 
-%% Ä¿±êº¯Êı
-%% 1) ¿¼ÂÇ¹ÂÍøµÄÌØÕ÷£¬Ìá³ö·´Ó³Ò»´Îµ÷ÆµĞ§¹ûµÄÆÀ¼ÛÖ¸±êÎª
+%% ç›®æ ‡å‡½æ•°
+%% 1) è€ƒè™‘å­¤ç½‘çš„ç‰¹å¾ï¼Œæå‡ºåæ˜ ä¸€æ¬¡è°ƒé¢‘æ•ˆæœçš„è¯„ä»·æŒ‡æ ‡ä¸º
 fun =0;
 for t=1:m1
     fun=fun+ft(t)^2 ;
 
 end
 fun=sqrt(fun/m1);
-%% 2) ·´Ó³ºÉµç×´Ì¬ QSOC±£³ÖĞ§¹ûµÄÆÀ¼ÛÖ¸±êÎª
+%% 2) åæ˜ è·ç”µçŠ¶æ€ QSOCä¿æŒæ•ˆæœçš„è¯„ä»·æŒ‡æ ‡ä¸º
 Q_soc=0;
 for t=1:m1
     Q_soc=Q_soc+((E_bt(t+1)/E_b-soc_ref)^2) ;
 
 end
 Q_soc=sqrt(Q_soc/m1);
-% %% 3)³É±¾ÏÖÖµ
-% %% Í¶×Ê³É±¾
+% %% 3)æˆæœ¬ç°å€¼
+% %% æŠ•èµ„æˆæœ¬
 % c_inv=0;
 % for t=1:n_
 %     c_inv=c_inv+cbat*E_b*(1+r)^(-Ke*T_lcc/(n_+1)) ;
 % end
 % c_inv=c_inv+cpcs*P_m;
-% %% ÔËĞĞÎ¬»¤³É±¾
-% %·ÅµçÁ¿
+% %% è¿è¡Œç»´æŠ¤æˆæœ¬
+% %æ”¾ç”µé‡
 % fang=zeros(m1,1);
 % for t=1:m1
 %     if Pt(t)>0
 %     fang(t)=Pt(t) ;
 %     end
 % end
-% %Äê·ÅµçÁ¿
+% %å¹´æ”¾ç”µé‡
 % sum_fang=sum( fang(t))*48*365;
 % co=0;
 % for t=1:T_lcc
 %    co=co+ceo*sum_fang*((1+r)^(-t)) ;
 % end
 % co=co+cpo*P_m*((1+r)^T_lcc-1)/(r*(1+r)^T_lcc) ;
-% %% ±¨·Ï´¦Àí³É±¾
+% %% æŠ¥åºŸå¤„ç†æˆæœ¬
 % cscr=0;
 % for t=1:(n_+1)
 %     cscr=cscr+ces*E_b*(1+r)^(-t*T_lcc*(n_+1)) ;
 % end
 % cscr=cscr+cps*P_m*(1+r)^(-T_lcc);
-% %% È±µç³Í·£
+% %% ç¼ºç”µæƒ©ç½š
 %
 %
-% %³É±¾ÏÖÖµ
+% %æˆæœ¬ç°å€¼
 % clcc=c_inv+co+cscr;
 
 end
